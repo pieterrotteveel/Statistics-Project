@@ -33,6 +33,9 @@ effectiveness <- data_clean$effectiveness
 attractiveness <- data_clean$attractiveness
 private_d <- data_clean$private_d
 
+
+# A1. Descriptive Statistics
+
 # Sex Analysis
 
 sex_counts <- table(sex)
@@ -375,7 +378,84 @@ ggsave("results/histogram_num_post.png", plot = histogram_num_post, width = 8, h
 
 
 
+# A2. Outlier Identification and Removal
+
+no_outliers_story_views <- story_views[story_views > story_views_lower_limit & story_views < story_views_upper_limit]
+no_outliers_num_follower <- num_follower[num_follower > num_follower_lower_limit & num_follower < num_follower_upper_limit]
+no_outliers_day_time_min <- day_time_min[day_time_min > day_time_min_lower_limit & day_time_min < day_time_min_upper_limit]
+no_outliers_num_post <- num_post[num_post > num_post_lower_limit & num_post < num_post_upper_limit]
+
+# Story Views Analysis (No Outliers)
+
+boxplot_story_views <- ggplot(as.data.frame(no_outliers_story_views), aes(y=no_outliers_story_views)) + 
+  geom_boxplot(fill="orange") +
+  theme_minimal() + 
+  ggtitle("Boxplot of Story Views (No Outliers)") +
+  ylab("Story Views")
+
+ggsave("results/boxplot_story_views_no_outliers.png", plot = boxplot_story_views, width = 8, height = 6)
+
+histogram_story_views <- ggplot(as.data.frame(no_outliers_story_views), aes(x=no_outliers_story_views)) + 
+  geom_histogram(fill="skyblue", color="black", bins=30) +
+  theme_minimal() + 
+  ggtitle("Distribution of Story Views (No Outliers)") +
+  xlab("Story Views")
+
+ggsave("results/histogram_story_views_no_outliers.png", plot = histogram_story_views, width = 8, height = 6)
 
 
+# Number of Followers Analysis (No Outliers)
+
+boxplot_followers <- ggplot(as.data.frame(no_outliers_num_follower), aes(y=no_outliers_num_follower)) + 
+  geom_boxplot(fill="orange") +
+  theme_minimal() + 
+  ggtitle("Boxplot of Followers (No Outliers)") +
+  ylab("Number of Followers")
+
+ggsave("results/boxplot_followers_no_outliers.png", plot = boxplot_followers, width = 8, height = 6)
+
+histogram_followers <- ggplot(as.data.frame(no_outliers_num_follower), aes(x=no_outliers_num_follower)) + 
+  geom_histogram(fill="skyblue", color="black", bins=30) +
+  theme_minimal() + 
+  ggtitle("Distribution of Followers (No Outliers)") +
+  xlab("Number of Followers")
+
+ggsave("results/histogram_followers_no_outliers.png", plot = histogram_followers, width = 8, height = 6)
 
 
+# Day Time Minutes Analysis (No Outliers)
+
+boxplot_day_time_min <- ggplot(as.data.frame(no_outliers_day_time_min), aes(y=no_outliers_day_time_min)) + 
+  geom_boxplot(fill="orange") +
+  theme_minimal() + 
+  ggtitle("Boxplot of Day Time Minutes (No Outliers)") +
+  ylab("Day Time Minutes")
+
+ggsave("results/boxplot_day_time_min_no_outliers.png", plot = boxplot_day_time_min, width = 8, height = 6)
+
+histogram_day_time_min <- ggplot(as.data.frame(no_outliers_day_time_min), aes(x=no_outliers_day_time_min)) + 
+  geom_histogram(fill="skyblue", color="black", bins=30) +
+  theme_minimal() + 
+  ggtitle("Distribution of Day Time Minutes (No Outliers)") +
+  xlab("Day Time Minutes")
+
+ggsave("results/histogram_day_time_min_no_outliers.png", plot = histogram_day_time_min, width = 8, height = 6)
+
+
+# Number of Posts Analysis (No Outliers)
+
+boxplot_num_post <- ggplot(as.data.frame(no_outliers_num_post), aes(y=no_outliers_num_post)) + 
+  geom_boxplot(fill="orange") +
+  theme_minimal() + 
+  ggtitle("Boxplot of Number of Posts (No Outliers)") +
+  ylab("Number of Posts")
+
+ggsave("results/boxplot_num_post_no_outliers.png", plot = boxplot_num_post, width = 8, height = 6)
+
+histogram_num_post <- ggplot(as.data.frame(no_outliers_num_post), aes(x=no_outliers_num_post)) + 
+  geom_histogram(fill="skyblue", color="black", bins=30) +
+  theme_minimal() + 
+  ggtitle("Distribution of Number of Posts (No Outliers)") +
+  xlab("Number of Posts")
+
+ggsave("results/histogram_num_post_no_outliers.png", plot = histogram_num_post, width = 8, height = 6)
