@@ -317,8 +317,13 @@ plot_private_d_props <- ggplot(as.data.frame(private_d_props), aes(x = private_d
 
 ggsave("results/plot_private_d_props.png", plot = plot_private_d_props, width = 6, height = 4)
 
+# Story Views Boxplot and Histogram
 
-# Story Views Histogram
+boxplot_story_views <- ggplot(as.data.frame(num_follower), aes(y=num_follower)) + 
+  geom_boxplot(fill="orange") +
+  theme_minimal() + ggtitle("Boxplot of Followers (Original)")
+
+ggsave("results/boxplot_story_views.png", plot = boxplot_story_views, width = 8, height = 6)
 
 histogram_story_views <- ggplot(as.data.frame(story_views), aes(x=story_views)) + 
   geom_histogram(fill="skyblue", color="black", bins=30) +
@@ -326,13 +331,48 @@ histogram_story_views <- ggplot(as.data.frame(story_views), aes(x=story_views)) 
 
 ggsave("results/histogram_story_views.png", plot = histogram_story_views, width = 8, height = 6)
 
-# Number of Followers Analysis Boxplot
+# Number of Followers Analysis Boxplot and Histogram
 
-follower_boxplot <- ggplot(as.data.frame(num_follower), aes(y=num_follower)) + 
+boxplot_followers <- ggplot(as.data.frame(num_follower), aes(y=num_follower)) + 
   geom_boxplot(fill="orange") +
   theme_minimal() + ggtitle("Boxplot of Followers (Original)")
 
-ggsave("results/boxplot_followers.png", plot = follower_boxplot, width = 8, height = 6)
+ggsave("results/boxplot_followers.png", plot = boxplot_followers, width = 8, height = 6)
+
+histogram_followers <- ggplot(as.data.frame(story_views), aes(x=story_views)) + 
+  geom_histogram(fill="skyblue", color="black", bins=30) +
+  theme_minimal() + ggtitle("Distribution of Followers (Original)")
+
+ggsave("results/histogram_followers.png", plot = histogram_followers, width = 8, height = 6)
+
+# Day Time Minutes Analysis Boxplot and Histogram
+
+boxplot_day_time_min <- ggplot(as.data.frame(day_time_min), aes(y=day_time_min)) + 
+  geom_boxplot(fill="orange") +
+  theme_minimal() + ggtitle("Boxplot of Day Time Minutes (Original)")
+
+ggsave("results/boxplot_day_time_min.png", plot = boxplot_day_time_min, width = 8, height = 6)
+
+histogram_day_time_min <- ggplot(as.data.frame(day_time_min), aes(x=day_time_min)) + 
+  geom_histogram(fill="skyblue", color="black", bins=30) +
+  theme_minimal() + ggtitle("Distribution of Day Time Minutes (Original)")
+
+ggsave("results/histogram_day_time_min.png", plot = histogram_day_time_min, width = 8, height = 6)
+
+#Number of Posts Analysis Boxplot and Histogram
+
+boxplot_num_post <- ggplot(as.data.frame(num_post), aes(y=num_post)) + 
+  geom_boxplot(fill="orange") +
+  theme_minimal() + ggtitle("Boxplot of Number of Posts (Original)")
+
+ggsave("results/boxplot_num_post.png", plot = boxplot_num_post, width = 8, height = 6)
+
+histogram_num_post <- ggplot(as.data.frame(num_post), aes(x=num_post)) + 
+  geom_histogram(fill="skyblue", color="black", bins=30) +
+  theme_minimal() + ggtitle("Distribution of Number of Posts (Original)")
+
+ggsave("results/histogram_num_post.png", plot = histogram_num_post, width = 8, height = 6)
+
 
 
 
