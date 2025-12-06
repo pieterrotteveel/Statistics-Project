@@ -525,3 +525,50 @@ cat("\n Language: Italian Proportion 90% CI \n")
 print(ci_italian$conf.int)
 print(paste("Proportion:", round(ci_italian$estimate, 4)))
 
+
+
+# ==============================================================================
+# C. Hypothesis Testing
+# ==============================================================================
+
+# Ensure data_final_clean is loaded
+
+# --- C.1. Followers: Men vs Women ---
+# H0: Mean followers (Men) = Mean followers (Women)
+# H1: Mean followers (Men) != Mean followers (Women)
+
+followers_men <- subset(data_final_clean, sex == 'M')$num_follower
+followers_women <- subset(data_final_clean, sex == 'F')$num_follower
+
+test_c1 <- t.test(followers_men, followers_women)
+
+cat("\n--- C.1 Followers: Men vs Women ---\n")
+print(test_c1)
+
+
+# --- C.2. Story Views: Public vs Private University ---
+# Check the coding of private_d (Assuming 1 = Private, 0 = Public based on standard dummy coding)
+# H0: Mean views (Public) = Mean views (Private)
+# H1: Mean views (Public) != Mean views (Private)
+
+views_public <- subset(data_final_clean, private_d == 0)$story_views
+views_private <- subset(data_final_clean, private_d == 1)$story_views
+
+test_c2 <- t.test(views_public, views_private)
+
+cat("\n--- C.2 Story Views: Public vs Private University ---\n")
+print(test_c2)
+
+
+# --- C.3. Daily Time: English vs Italian ---
+# H0: Mean time (English) = Mean time (Italian)
+# H1: Mean time (English) != Mean time (Italian)
+
+time_english <- subset(data_final_clean, language == 'English')$day_time_min
+time_italian <- subset(data_final_clean, language == 'Italian')$day_time_min
+
+test_c3 <- t.test(time_english, time_italian, conf.level = 0.99) # Alpha = 0.01 implies 99% Conf Level
+
+cat("\n--- C.3 Daily Time: English vs Italian ---\n")
+print(test_c3)
+
