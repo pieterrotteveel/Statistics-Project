@@ -104,34 +104,7 @@ cat(paste("\nObservations remaining after removing outliers:", nrow(df_clean), "
 # ------------------------------------------------------------------------------
 cat("\n--- SECTION B: CONFIDENCE INTERVALS ---\n")
 
-# B.1. 95% CI for Number of Views
-ci_views <- t.test(df_clean$story_views, conf.level = 0.95)
-print("95% CI for Story Views:")
-print(ci_views$conf.int)
-
-# Compare Only Child (siblings == 0) vs Others
-only_child <- subset(df_clean, siblings == 0)
-others <- subset(df_clean, siblings > 0)
-cat("\nMean Views - Only Child:", mean(only_child$story_views))
-cat("\nMean Views - Siblings:", mean(others$story_views), "\n")
-# (Visual comparison, formal test is in Section C)
-
-# B.2. 99% CI for Number of Followers
-ci_followers <- t.test(df_clean$num_follower, conf.level = 0.99)
-print("99% CI for Followers:")
-print(ci_followers$conf.int)
-
-# Compare Men vs Women (Descriptive check)
-print(tapply(df_clean$num_follower, df_clean$sex, mean))
-
-# B.3. 90% CI for Proportion of Italian Accounts
-# Count Italians
-n_italian <- sum(df_clean$language == "Italian")
-n_total <- nrow(df_clean)
-prop_test_it <- prop.test(n_italian, n_total, conf.level = 0.90)
-print("90% CI for Proportion of Italian Accounts:")
-print(prop_test_it$conf.int)
-
+#
 # ------------------------------------------------------------------------------
 # C. HYPOTHESIS TESTING
 # ------------------------------------------------------------------------------

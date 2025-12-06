@@ -79,7 +79,6 @@ story_views_lower_IQR_value <- IQR(story_views)
 story_views_lower_limit <- story_views_Q1 - (1.5 * story_views_lower_IQR_value)
 story_views_upper_limit <- story_views_Q3 + (1.5 * story_views_lower_IQR_value)
 
-data_no_outliers <- subset(data, story_views > story_views_lower_limit & story_views < story_views_upper_limit)
 
 print(story_views_mean)
 print(story_views_median)
@@ -106,7 +105,6 @@ day_time_min_IQR_value <- IQR(day_time_min)
 day_time_min_lower_limit <- day_time_min_Q1 - (1.5 * day_time_min_IQR_value)
 day_time_min_upper_limit <- day_time_min_Q3 + (1.5 * day_time_min_IQR_value)
 
-day_time_min_data_no_outliers <- subset(data, day_time_min > day_time_min_lower_limit & day_time_min < day_time_min_upper_limit)
 
 print(day_time_min_mean)
 print(day_time_min_median)
@@ -133,8 +131,6 @@ num_follower_IQR_value <- IQR(num_follower)
 num_follower_lower_limit <- num_follower_Q1 - (1.5 * num_follower_IQR_value)
 num_follower_upper_limit <- num_follower_Q3 + (1.5 * num_follower_IQR_value)
 
-num_follower_data_no_outliers <- subset(data, num_follower > num_follower_lower_limit & num_follower < num_follower_upper_limit)
-
 print(num_follower_mean)
 print(num_follower_median)
 print(num_follower_sd)
@@ -160,7 +156,6 @@ num_post_IQR_value <- IQR(num_post)
 num_post_lower_limit <- num_post_min_Q1 - (1.5 * num_post_IQR_value)
 num_post_upper_limit <- num_post_min_Q3 + (1.5 * num_post_IQR_value)
 
-num_post_data_no_outliers <- subset(data, num_post > num_post_lower_limit & num_post < num_post_upper_limit)
 
 print(num_post_mean)
 print(num_post_median)
@@ -459,3 +454,74 @@ histogram_num_post <- ggplot(as.data.frame(no_outliers_num_post), aes(x=no_outli
   xlab("Number of Posts")
 
 ggsave("results/histogram_num_post_no_outliers.png", plot = histogram_num_post, width = 8, height = 6)
+
+
+# Clean Data Set
+
+data_final_clean <- subset(data_clean, 
+    story_views > story_views_lower_limit & story_views < story_views_upper_limit &
+    num_follower > num_follower_lower_limit & num_follower < num_follower_upper_limit &
+    day_time_min > day_time_min_lower_limit & day_time_min < day_time_min_upper_limit &
+    num_post > num_post_lower_limit & num_post < num_post_upper_limit
+)
+
+write.csv(data_final_clean, "data/cleaned_data_final_no_outliers.csv", row.names = FALSE)
+
+
+#B. Confidence Intervals
+
+#B1. Story Views (95% Confidence Interval) ---
+
+# 1. Overall 95% CI
+ci_story_overall <- t.test(data_final_clean$story_views, conf.level = 0.95)
+cat("\n--- Story Views: Overall 95% CI ---\n")
+print(ci_story_overall$conf.int)
+print(paste("Mean:", round(ci_story_overall$estimate, 2)))
+
+# 2. Compare Only Child (siblings == 0) vs Others (siblings > 0)
+views_only_child <- subset(data_final_clean, siblings == 0)$story_views
+views_others <- subset(data_final_clean, siblings > 0)$story_views
+
+ci_story_only <- t.test(views_only_child, conf.level = 0.95)
+ci_story_others <- t.test(views_others, conf.level = 0.95)
+
+cat("\n--- Story Views: Only Child 95% CI ---\n")
+print(ci_story_only$conf.int)
+print(paste("Mean:", round(ci_story_only$estimate, 2)))
+
+cat("\n--- Story Views: Others (Has Siblings) 95% CI ---\n")
+print(ci_story_others$conf.int)
+print(paste("Mean:", round(ci_story_others$estimate, 2)))
+
+
+# B2. Number of Followers (99% Confidence Interval)
+
+# Compare Men (sex == 'M') vs Women (sex == 'F')
+followers_men <- subset(data_final_clean, sex == 'M')$num_follower
+followers_women <- subset(data_final_clean, sex == 'F')$num_follower
+
+ci_followers_men <- t.test(followers_men, conf.level = 0.99)
+ci_followers_women <- t.test(followers_women, conf.level = 0.99)
+
+cat("\n Followers: Men 99% CI \n")
+print(ci_followers_men$conf.int)
+print(paste("Mean:", round(ci_followers_men$estimate, 2)))
+
+cat("\n Followers: Women 99% CI \n")
+print(ci_followers_women$conf.int)
+print(paste("Mean:", round(ci_followers_women$estimate, 2)))
+
+
+# B3. Proportion of Italian Accounts (90% Confidence Interval)
+
+# Count occurrences
+n_total <- nrow(data_final_clean)
+n_italian <- sum(data_final_clean$language == "Italian")
+
+# Calculate CI for proportion
+ci_italian <- prop.test(n_italian, n_total, conf.level = 0.90)
+
+cat("\n Language: Italian Proportion 90% CI \n")
+print(ci_italian$conf.int)
+print(paste("Proportion:", round(ci_italian$estimate, 4)))
+
