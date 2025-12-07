@@ -526,14 +526,12 @@ print(ci_italian$conf.int)
 print(paste("Proportion:", round(ci_italian$estimate, 4)))
 
 
+# C Hypothesis Testing
 
-# ==============================================================================
-# C. Hypothesis Testing
-# ==============================================================================
 
 # Ensure data_final_clean is loaded
 
-# --- C.1. Followers: Men vs Women ---
+# C1. Followers: Men vs Women
 # H0: Mean followers (Men) = Mean followers (Women)
 # H1: Mean followers (Men) != Mean followers (Women)
 
@@ -542,11 +540,11 @@ followers_women <- subset(data_final_clean, sex == 'F')$num_follower
 
 test_c1 <- t.test(followers_men, followers_women)
 
-cat("\n--- C.1 Followers: Men vs Women ---\n")
+cat("\nC1 Followers: Men vs Women\n")
 print(test_c1)
 
 
-# --- C.2. Story Views: Public vs Private University ---
+# C2 Story Views: Public vs Private University ---
 # Check the coding of private_d (Assuming 1 = Private, 0 = Public based on standard dummy coding)
 # H0: Mean views (Public) = Mean views (Private)
 # H1: Mean views (Public) != Mean views (Private)
@@ -556,11 +554,11 @@ views_private <- subset(data_final_clean, private_d == 1)$story_views
 
 test_c2 <- t.test(views_public, views_private)
 
-cat("\n--- C.2 Story Views: Public vs Private University ---\n")
+cat("\nC2 Story Views: Public vs Private University\n")
 print(test_c2)
 
 
-# --- C.3. Daily Time: English vs Italian ---
+#C3 Daily Time: English vs Italian
 # H0: Mean time (English) = Mean time (Italian)
 # H1: Mean time (English) != Mean time (Italian)
 
@@ -569,6 +567,154 @@ time_italian <- subset(data_final_clean, language == 'Italian')$day_time_min
 
 test_c3 <- t.test(time_english, time_italian, conf.level = 0.99) # Alpha = 0.01 implies 99% Conf Level
 
-cat("\n--- C.3 Daily Time: English vs Italian ---\n")
+cat("\nC3 Daily Time: English vs Italian\n")
 print(test_c3)
+
+
+# ==============================================================================
+# D. Linear Regression Analysis
+# ==============================================================================
+
+# Ensure we are using the clean data without outliers for better regression results
+# If you prefer the original data, switch 'data_final_clean' to 'data_clean'
+reg_data <- data_final_clean 
+
+# ------------------------------------------------------------------------------
+# D1. Simple Linear Regression
+# Model: story_views (Dependent) ~ num_follower (Independent)
+# ------------------------------------------------------------------------------
+
+cat("\n========================================\n")
+cat(" D1. Simple Linear Regression Results \n")
+cat("========================================\n")
+
+# 1. Run the model
+model_simple <- lm(story_views ~ num_follower, data = reg_data)
+summary_simple <- summary(model_simple)
+
+# 2. Calculate Metrics (SSE, SSR, SST, MSE, RSE, R-squared)
+# Predictions and Residuals
+preds_simple <- predict(model_simple)
+resids_simple <- residuals(model_simple)
+
+# Sum of Squares
+sse_simple <- sum(resids_simple^2)                         # Sum of Squared Errors
+sst_simple <- sum((reg_data$story_views - mean(reg_data$story_views))^2) # Total Sum of Squares
+ssr_simple <- sst_simple - sse_simple                      # Sum of Squares Regression
+
+# Mean Squares and Errors
+n_simple <- nrow(reg_data)
+p_simple <- 1 # Number of predictors
+mse_simple <- sse_simple / (n_simple - p_simple - 1)       # Mean Squared Error
+rse_simple <- sqrt(mse_simple)                             # Residual Standard Error (matches summary(model)$sigma)
+r_squared_simple <- summary_simple$r.squared               # R-squared
+
+# Print Metrics
+cat(sprintf("SSE: %.4f\n", sse_simple))
+cat(sprintf("SSR: %.4f\n", ssr_simple))
+cat(sprintf("SST: %.4f\n", sst_simple))
+cat(sprintf("MSE: %.4f\n", mse_simple))
+cat(sprintf("RSE: %.4f\n", rse_simple))
+cat(sprintf("R-squared: %.4f\n", r_squared_simple))
+
+# 3. Coefficients (b0, b1, Std Error, t-value, p-value)
+cat("\n--- Coefficients ---\n")
+print(summary_simple$coefficients)
+
+# 4. Standardized Coefficients
+# We can calculate this by scaling the data before running the model
+model_simple_std <- lm(scale(story_views) ~ scale(num_follower), data = reg_data)
+cat("\n--- Standardized Coefficients (Beta) ---\n")
+print(coef(model_simple_std))
+
+# 5. Plots
+# Histogram of Residuals
+plot_hist_resid_simple <- ggplot(data.frame(resids = resids_simple), aes(x = resids)) +
+  geom_histogram(fill = "steelblue", color = "white", bins = 30) +
+  theme_minimal() +
+  labs(title = "Histogram of Residuals (Simple Regression)", x = "Residuals", y = "Frequency")
+
+ggsave("results/D1_histogram_residuals.png", plot = plot_hist_resid_simple, width = 6, height = 4)
+
+# Residuals vs Fitted Plot
+plot_resid_fit_simple <- ggplot(data.frame(fitted = preds_simple, resid = resids_simple), aes(x = fitted, y = resid)) +
+  geom_point(alpha = 0.5, color = "darkblue") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  theme_minimal() +
+  labs(title = "Residuals vs Fitted (Simple Regression)", x = "Fitted Values", y = "Residuals")
+
+ggsave("results/D1_residuals_vs_fitted.png", plot = plot_resid_fit_simple, width = 6, height = 4)
+
+
+# ------------------------------------------------------------------------------
+# D2. Multiple Linear Regression
+# Model: story_views ~ num_follower + sex + account_num + num_post + day_time_min
+# ------------------------------------------------------------------------------
+
+cat("\n========================================\n")
+cat(" D2. Multiple Linear Regression Results \n")
+cat("========================================\n")
+
+# 1. Run the model
+model_multi <- lm(story_views ~ num_follower + sex + account_num + num_post + day_time_min, data = reg_data)
+summary_multi <- summary(model_multi)
+
+# 2. Calculate Metrics
+preds_multi <- predict(model_multi)
+resids_multi <- residuals(model_multi)
+
+sse_multi <- sum(resids_multi^2)
+sst_multi <- sum((reg_data$story_views - mean(reg_data$story_views))^2)
+ssr_multi <- sst_multi - sse_multi
+
+n_multi <- nrow(reg_data)
+p_multi <- 5 # Number of predictors: num_follower, sex, account_num, num_post, day_time_min
+mse_multi <- sse_multi / (n_multi - p_multi - 1)
+rse_multi <- sqrt(mse_multi)
+r_squared_multi <- summary_multi$r.squared
+
+# Print Metrics
+cat(sprintf("SSE: %.4f\n", sse_multi))
+cat(sprintf("SSR: %.4f\n", ssr_multi))
+cat(sprintf("SST: %.4f\n", sst_multi))
+cat(sprintf("MSE: %.4f\n", mse_multi))
+cat(sprintf("RSE: %.4f\n", rse_multi))
+cat(sprintf("R-squared: %.4f\n", r_squared_multi))
+
+# 3. Coefficients
+cat("\n--- Coefficients ---\n")
+print(summary_multi$coefficients)
+
+# 4. Standardized Coefficients
+# Note: scaling factors (sex) requires them to be numeric for simple scale(), 
+# but lm() handles factors automatically in standard regression. 
+# For standardized betas, it's best to keep Y numeric and X numeric scaled, 
+# typically standardized betas are not always calculated for categorical dummies in the same simple way,
+# but here is a method scaling the numeric inputs and Y.
+reg_data_scaled <- reg_data
+num_vars <- c("story_views", "num_follower", "account_num", "num_post", "day_time_min")
+reg_data_scaled[num_vars] <- scale(reg_data[num_vars])
+
+model_multi_std <- lm(story_views ~ num_follower + sex + account_num + num_post + day_time_min, data = reg_data_scaled)
+cat("\n--- Standardized Coefficients (Beta) ---\n")
+print(coef(model_multi_std))
+
+# 5. Plots
+# Histogram of Residuals
+plot_hist_resid_multi <- ggplot(data.frame(resids = resids_multi), aes(x = resids)) +
+  geom_histogram(fill = "forestgreen", color = "white", bins = 30) +
+  theme_minimal() +
+  labs(title = "Histogram of Residuals (Multiple Regression)", x = "Residuals", y = "Frequency")
+
+ggsave("results/D2_histogram_residuals.png", plot = plot_hist_resid_multi, width = 6, height = 4)
+
+# Residuals vs Fitted Plot
+plot_resid_fit_multi <- ggplot(data.frame(fitted = preds_multi, resid = resids_multi), aes(x = fitted, y = resid)) +
+  geom_point(alpha = 0.5, color = "darkgreen") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  theme_minimal() +
+  labs(title = "Residuals vs Fitted (Multiple Regression)", x = "Fitted Values", y = "Residuals")
+
+ggsave("results/D2_residuals_vs_fitted.png", plot = plot_resid_fit_multi, width = 6, height = 4)
+
 
