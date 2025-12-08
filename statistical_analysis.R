@@ -767,11 +767,6 @@ cat("\nCoefficients\n")
 print(summary_multi$coefficients)
 
 # 4. Standardized Coefficients
-# Note: scaling factors (sex) requires them to be numeric for simple scale(), 
-# but lm() handles factors automatically in standard regression. 
-# For standardized betas, it's best to keep Y numeric and X numeric scaled, 
-# typically standardized betas are not always calculated for categorical dummies in the same simple way,
-# but here is a method scaling the numeric inputs and Y.
 
 reg_data_scaled <- reg_data
 num_vars <- c("story_views", "num_follower", "account_num", "num_post", "day_time_min")
