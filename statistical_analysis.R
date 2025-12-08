@@ -155,7 +155,6 @@ num_follower_IQR_value <- IQR(num_follower)
 num_follower_lower_limit <- num_follower_Q1 - (1.5 * num_follower_IQR_value)
 num_follower_upper_limit <- num_follower_Q3 + (1.5 * num_follower_IQR_value)
 
-
 # Number of Posts Analysis
 
 num_post_mean <- mean(num_post)
@@ -424,7 +423,6 @@ histogram_num_post <- ggplot(as.data.frame(num_post), aes(x=num_post)) +
 
 ggsave("results/histogram_num_post.png", plot = histogram_num_post, width = 8, height = 6)
 
-
 # A2. Descriptive Statistics (Without Outliers)
 
 no_outliers_account_num <- account_num[account_num > account_num_lower_limit & account_num < account_num_upper_limit]
@@ -432,8 +430,6 @@ no_outliers_story_views <- story_views[story_views > story_views_lower_limit & s
 no_outliers_num_follower <- num_follower[num_follower > num_follower_lower_limit & num_follower < num_follower_upper_limit]
 no_outliers_day_time_min <- day_time_min[day_time_min > day_time_min_lower_limit & day_time_min < day_time_min_upper_limit]
 no_outliers_num_post <- num_post[num_post > num_post_lower_limit & num_post < num_post_upper_limit]
-
-
 
 # Account Number Analysis (No Outliers)
 
@@ -471,7 +467,6 @@ histogram_story_views <- ggplot(as.data.frame(no_outliers_story_views), aes(x=no
 
 ggsave("results/histogram_story_views_no_outliers.png", plot = histogram_story_views, width = 8, height = 6)
 
-
 # Number of Followers Analysis (No Outliers)
 
 boxplot_followers <- ggplot(as.data.frame(no_outliers_num_follower), aes(y=no_outliers_num_follower)) + 
@@ -489,7 +484,6 @@ histogram_followers <- ggplot(as.data.frame(no_outliers_num_follower), aes(x=no_
   xlab("Number of Followers")
 
 ggsave("results/histogram_followers_no_outliers.png", plot = histogram_followers, width = 8, height = 6)
-
 
 # Day Time Minutes Analysis (No Outliers)
 
@@ -509,7 +503,6 @@ histogram_day_time_min <- ggplot(as.data.frame(no_outliers_day_time_min), aes(x=
 
 ggsave("results/histogram_day_time_min_no_outliers.png", plot = histogram_day_time_min, width = 8, height = 6)
 
-
 # Number of Posts Analysis (No Outliers)
 
 boxplot_num_post <- ggplot(as.data.frame(no_outliers_num_post), aes(y=no_outliers_num_post)) + 
@@ -527,7 +520,6 @@ histogram_num_post <- ggplot(as.data.frame(no_outliers_num_post), aes(x=no_outli
   xlab("Number of Posts")
 
 ggsave("results/histogram_num_post_no_outliers.png", plot = histogram_num_post, width = 8, height = 6)
-
 
 # Clean Data Set
 
@@ -567,8 +559,6 @@ cat(paste("Mean:", round(ci_story_only$estimate, 2)))
 cat("\n Story Views: Others (Has Siblings) 95% CI \n")
 cat(ci_story_others$conf.int)
 cat(paste("Mean:", round(ci_story_others$estimate, 2)))
-
-
 
 # B2. Number of Followers (99% Confidence Interval)
 
@@ -610,11 +600,7 @@ cat("\n Language: Italian Proportion 90% CI \n")
 cat(ci_italian$conf.int)
 cat(paste("Proportion:", round(ci_italian$estimate, 4)))
 
-
 # C Hypothesis Testing
-
-
-# Ensure data_final_clean is loaded
 
 # C1. Followers: Men vs Women
 # H0: Mean followers (Men) = Mean followers (Women)
@@ -628,9 +614,7 @@ test_c1 <- t.test(followers_men, followers_women)
 cat("\nC1 Followers: Men vs Women\n")
 print(test_c1)
 
-
 # C2 Story Views: Public vs Private University ---
-# Check the coding of private_d (Assuming 1 = Private, 0 = Public based on standard dummy coding)
 # H0: Mean views (Public) = Mean views (Private)
 # H1: Mean views (Public) != Mean views (Private)
 
@@ -642,7 +626,6 @@ test_c2 <- t.test(views_public, views_private)
 cat("\nC2 Story Views: Public vs Private University\n")
 print(test_c2)
 
-
 # C3 Daily Time: English vs Italian
 # H0: Mean time (English) = Mean time (Italian)
 # H1: Mean time (English) != Mean time (Italian)
@@ -650,16 +633,14 @@ print(test_c2)
 time_english <- subset(data_no_outliers, language == 'English')$day_time_min
 time_italian <- subset(data_no_outliers, language == 'Italian')$day_time_min
 
-test_c3 <- t.test(time_english, time_italian, conf.level = 0.99) # Alpha = 0.01 implies 99% Conf Level
+test_c3 <- t.test(time_english, time_italian, conf.level = 0.99)
 
 cat("\nC3 Daily Time: English vs Italian\n")
 print(test_c3)
 
-
 # D. Linear Regression Analysis
 
 reg_data <- data_no_outliers 
-
 
 # D1. Simple Linear Regression
 # Model: story_views (Dependent) ~ num_follower (Independent)
@@ -674,21 +655,22 @@ model_simple <- lm(story_views ~ num_follower, data = reg_data)
 summary_simple <- summary(model_simple)
 
 # 2. Calculate Metrics (SSE, SSR, SST, MSE, RSE, R-squared)
+
 # Predictions and Residuals
 preds_simple <- predict(model_simple)
 resids_simple <- residuals(model_simple)
 
 # Sum of Squares
-sse_simple <- sum(resids_simple^2)                         # Sum of Squared Errors
-sst_simple <- sum((reg_data$story_views - mean(reg_data$story_views))^2) # Total Sum of Squares
-ssr_simple <- sst_simple - sse_simple                      # Sum of Squares Regression
+sse_simple <- sum(resids_simple^2)                         
+sst_simple <- sum((reg_data$story_views - mean(reg_data$story_views))^2) 
+ssr_simple <- sst_simple - sse_simple                    
 
 # Mean Squares and Errors
 n_simple <- nrow(reg_data)
-p_simple <- 1 # Number of predictors
-mse_simple <- sse_simple / (n_simple - p_simple - 1)       # Mean Squared Error
-rse_simple <- sqrt(mse_simple)                             # Residual Standard Error (matches summary(model)$sigma)
-r_squared_simple <- summary_simple$r.squared               # R-squared
+p_simple <- 1 # Number of predictors: num_follower
+mse_simple <- sse_simple / (n_simple - p_simple - 1)       
+rse_simple <- sqrt(mse_simple)                           
+r_squared_simple <- summary_simple$r.squared               
 
 # Print Metrics
 cat(sprintf("SSE: %.4f\n", sse_simple))
@@ -703,12 +685,14 @@ cat("\n--- Coefficients ---\n")
 print(summary_simple$coefficients)
 
 # 4. Standardized Coefficients
-# We can calculate this by scaling the data before running the model
+
+\
 model_simple_std <- lm(scale(story_views) ~ scale(num_follower), data = reg_data)
 cat("\n--- Standardized Coefficients (Beta) ---\n")
 print(coef(model_simple_std))
 
 # 5. Plots
+
 # Histogram of Residuals
 plot_hist_resid_simple <- ggplot(data.frame(resids = resids_simple), aes(x = resids)) +
   geom_histogram(fill = "steelblue", color = "white", bins = 30) +
@@ -727,10 +711,8 @@ plot_resid_fit_simple <- ggplot(data.frame(fitted = preds_simple, resid = resids
 ggsave("results/D1_residuals_vs_fitted.png", plot = plot_resid_fit_simple, width = 6, height = 4)
 
 
-
 # D2. Multiple Linear Regression
 # Model: story_views ~ num_follower + sex + account_num + num_post + day_time_min
-
 
 cat("\n\n")
 cat(" D2. Multiple Linear Regression Results \n")
@@ -777,6 +759,7 @@ cat("\n Coefficients\n")
 print(coef(model_multi_std))
 
 # 5. Plots
+
 # Histogram of Residuals
 plot_hist_resid_multi <- ggplot(data.frame(resids = resids_multi), aes(x = resids)) +
   geom_histogram(fill = "forestgreen", color = "white", bins = 30) +
@@ -793,5 +776,3 @@ plot_resid_fit_multi <- ggplot(data.frame(fitted = preds_multi, resid = resids_m
   labs(title = "Residuals vs Fitted (Multiple Regression)", x = "Fitted Values", y = "Residuals")
 
 ggsave("results/D2_residuals_vs_fitted.png", plot = plot_resid_fit_multi, width = 6, height = 4)
-
-
