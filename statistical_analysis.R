@@ -659,8 +659,3 @@ print(anova(model_logit, test="Chisq"))
 # Calculate and Print Odds Ratios (for interpretation)
 cat("\n Odds Ratios: \n")
 print(exp(coef(model_logit)))
-
-# Optional: McFadden's Pseudo R-squared to assess model fit
-# install.packages("pscl") # Uncomment if you need to install it
-# library(pscl)
-# pR2(model_logit)
