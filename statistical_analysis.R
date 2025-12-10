@@ -455,12 +455,23 @@ ggsave("results/histogram_num_post_no_outliers.png", plot = histogram_num_post, 
 
 # Clean Data Set
 
-data_no_outliers <- subset(data, 
+data_clean <- na.omit(data)
+
+data_no_outliers <- subset(data_clean, 
     story_views > story_views_lower_limit & story_views < story_views_upper_limit &
     num_follower > num_follower_lower_limit & num_follower < num_follower_upper_limit &
     day_time_min > day_time_min_lower_limit & day_time_min < day_time_min_upper_limit &
     num_post > num_post_lower_limit & num_post < num_post_upper_limit
 )
+
+original_count <- nrow(data_clean)
+print(original_count)
+final_count <- nrow(data_no_outliers)
+print(final_count)
+removed_count <- original_count - final_count
+print(removed_count)
+removed_percentage <- (removed_count / original_count) * 100
+print(removed_percentage)
 
 write.csv(data_no_outliers, "data/cleaned_data_final_no_outliers.csv", row.names = FALSE)
 print(summary(data_no_outliers))
@@ -640,7 +651,6 @@ plot_boxplot_private <- ggplot(data_no_outliers, aes(x = as.factor(private_d), y
   theme_minimal()
 
 ggsave("results/plot_boxplot_private.png", plot = plot_boxplot_private, width = 8, height = 6)
-print(plot_boxplot_private)
 
 # F.1. Predict if account belongs to a private university student
 # Target: private_d (1 = Private, 0 = Public)
