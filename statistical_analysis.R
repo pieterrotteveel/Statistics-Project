@@ -555,10 +555,6 @@ test_c3 <- t.test(time_english, time_italian, conf.level = 0.99)
 cat("\nC3 Daily Time: English vs Italian\n")
 print(test_c3)
 
-
-
-
-
 # D. Linear Regression Analysis
 
 # D1. Simple Linear Regression
@@ -570,7 +566,22 @@ print (summary_simple)
 print (anova_simple)
 png("results/model_simple_plot.png")  
 plot(model_simple)  
-dev.off()           
+dev.off()   
+
+# Visualizing the Linear Regression (Story Views vs Followers)
+
+plot_linear_reg <- ggplot(data_no_outliers, aes(x = num_follower, y = story_views)) +
+  geom_point(color = "steelblue", alpha = 0.6) + 
+  geom_smooth(method = "lm", color = "red", se = TRUE) + 
+
+  labs(title = "Linear Regression: Story Views vs Number of Followers",
+       subtitle = "Visualizing the relationship with regression line and 95% CI",
+       x = "Number of Followers",
+       y = "Story Views") +
+  theme_minimal()
+
+ggsave("results/plot_linear_regression_1.png", plot = plot_linear_reg, width = 8, height = 6)
+
 
 # D2. Multiple Linear Regression
 cat("\n D2. Multiple Linear Regression Results \n")
@@ -581,6 +592,75 @@ print (summary_multi)
 print (anova_multi)
 png("results/model_multi_plot.png")  
 plot(model_multi)  
-dev.off()           
+dev.off() 
+
+# E. Prediction
 
 
+# E. Prediction
+
+# Define the "median female" profile based on the cleaned data
+# Note: Ensure 'data_no_outliers' is created as per your script before running this.
+median_data_female <- data.frame(
+  sex = "F",
+  num_follower = median(data_no_outliers$num_follower, na.rm = TRUE),
+  account_num = median(data_no_outliers$account_num, na.rm = TRUE),
+  num_post = median(data_no_outliers$num_post, na.rm = TRUE),
+  day_time_min = median(data_no_outliers$day_time_min, na.rm = TRUE)
+)
+
+# E.1. Predict expected number of views
+# ---------------------------------------------------------
+prediction_val <- predict(model_multi, newdata = median_data_female)
+
+cat("\n------------------------------------------------\n")
+cat("E.1 Predicted Expected Views (Female Median Account):\n")
+cat(round(prediction_val, 2))
+cat("\n------------------------------------------------\n")
+
+# E.2. 95% Confidence Interval
+# ---------------------------------------------------------
+# interval = "confidence" gives the CI for the mean expected value
+prediction_ci <- predict(model_multi, newdata = median_data_female, interval = "confidence", level = 0.95)
+
+cat("E.2 95% Confidence Interval:\n")
+print(prediction_ci)
+cat("------------------------------------------------\n")
+
+
+# F. Logistic Regression
+
+
+plot_boxplot_private <- ggplot(data_no_outliers, aes(x = as.factor(private_d), y = story_views)) +
+  geom_boxplot(fill = c("lightblue", "orange")) +
+  labs(title = "Distribution of Story Views by University Type",
+       subtitle = "0 = Public, 1 = Private",
+       x = "University Type",
+       y = "Story Views") +
+  theme_minimal()
+
+ggsave("results/plot_boxplot_private.png", plot = plot_boxplot_private, width = 8, height = 6)
+print(plot_boxplot_private)
+
+# F.1. Predict if account belongs to a private university student
+# Target: private_d (1 = Private, 0 = Public)
+# Predictors: num_follower, num_post, story_views
+
+# Fit the Logistic Regression Model
+model_logit <- glm(private_d ~ num_follower + num_post + story_views, 
+                   data = data_no_outliers, 
+                   family = binomial)
+
+# Print Summary of the Model
+cat("\n F.1. Logistic Regression Results \n")
+print(summary(model_logit))
+print(anova(model_logit, test="Chisq"))
+
+# Calculate and Print Odds Ratios (for interpretation)
+cat("\n Odds Ratios: \n")
+print(exp(coef(model_logit)))
+
+# Optional: McFadden's Pseudo R-squared to assess model fit
+# install.packages("pscl") # Uncomment if you need to install it
+# library(pscl)
+# pR2(model_logit)
