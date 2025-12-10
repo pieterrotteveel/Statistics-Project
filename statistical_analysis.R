@@ -8,6 +8,7 @@ library(lmtest)
 library(nortest)
 library(gridExtra)
 library(moments)
+library(ggfortify) 
 
 # Set up Workspace and Load Data
 
@@ -30,8 +31,6 @@ attractiveness <- na.omit(data$attractiveness)
 private_d <- na.omit(data$private_d)
 
 
-
-
 # A. Descriptive Statistics
 
 # A1. Descriptive Statistics (With Outliers)
@@ -45,35 +44,12 @@ sex_counts <- table(sex)
 sex_props <- prop.table(sex_counts)
 sex_mode <- names(sex_counts)[which.max(sex_counts)]
 
-account_num_mean <- mean(account_num)
-account_num_median <- median(account_num)
-account_num_sd <- sd(account_num)
-account_num_var <- var(account_num)
-account_num_IQR <- IQR(account_num)
-account_num_quantiles <- quantile(account_num, probs = c(0.25, 0.5, 0.75))
-account_num_Q1 <- quantile(account_num, 0.25)
-account_num_Q3 <- quantile(account_num, 0.75)
-account_num_IQR_value <- IQR(account_num)
-account_num_lower_limit <- account_num_Q1 - (1.5 * account_num_IQR_value)
-account_num_upper_limit <- account_num_Q3 + (1.5 * account_num_IQR_value)
 
 # Language Analysis
 
 language_counts <- table(language)
 language_props <- prop.table(language_counts)
 language_mode <- names(language_counts)[which.max(language_counts)]
-
-account_num_mean <- mean(account_num)
-account_num_median <- median(account_num)
-account_num_sd <- sd(account_num)
-account_num_var <- var(account_num)
-account_num_IQR <- IQR(account_num)
-account_num_quantiles <- quantile(account_num, probs = c(0.25, 0.5, 0.75))
-account_num_Q1 <- quantile(account_num, 0.25)
-account_num_Q3 <- quantile(account_num, 0.75)
-account_num_IQR_value <- IQR(account_num)
-account_num_lower_limit <- account_num_Q1 - (1.5 * account_num_IQR_value)
-account_num_upper_limit <- account_num_Q3 + (1.5 * account_num_IQR_value)
 
 
 # Siblings Analysis
@@ -82,17 +58,6 @@ siblings_counts <- table(siblings)
 siblings_props <- prop.table(siblings_counts)
 siblings_mode <- names(siblings_counts)[which.max(siblings_counts)]
 
-account_num_mean <- mean(account_num)
-account_num_median <- median(account_num)
-account_num_sd <- sd(account_num)
-account_num_var <- var(account_num)
-account_num_IQR <- IQR(account_num)
-account_num_quantiles <- quantile(account_num, probs = c(0.25, 0.5, 0.75))
-account_num_Q1 <- quantile(account_num, 0.25)
-account_num_Q3 <- quantile(account_num, 0.75)
-account_num_IQR_value <- IQR(account_num)
-account_num_lower_limit <- account_num_Q1 - (1.5 * account_num_IQR_value)
-account_num_upper_limit <- account_num_Q3 + (1.5 * account_num_IQR_value)
 
 #account_num Analysis
 
@@ -175,17 +140,6 @@ effectiveness_counts <- table(effectiveness)
 effectiveness_props <- prop.table(effectiveness_counts)
 effectiveness_mode <- names(effectiveness_counts)[which.max(effectiveness_counts)]
 
-account_num_mean <- mean(account_num)
-account_num_median <- median(account_num)
-account_num_sd <- sd(account_num)
-account_num_var <- var(account_num)
-account_num_IQR <- IQR(account_num)
-account_num_quantiles <- quantile(account_num, probs = c(0.25, 0.5, 0.75))
-account_num_Q1 <- quantile(account_num, 0.25)
-account_num_Q3 <- quantile(account_num, 0.75)
-account_num_IQR_value <- IQR(account_num)
-account_num_lower_limit <- account_num_Q1 - (1.5 * account_num_IQR_value)
-account_num_upper_limit <- account_num_Q3 + (1.5 * account_num_IQR_value)
 
 # Attractiveness Analysis
 
@@ -193,34 +147,12 @@ attractiveness_counts <- table(attractiveness)
 attractiveness_props <- prop.table(attractiveness_counts)
 attractiveness_mode <- names(attractiveness_counts)[which.max(attractiveness_counts)]
 
-account_num_mean <- mean(account_num)
-account_num_median <- median(account_num)
-account_num_sd <- sd(account_num)
-account_num_var <- var(account_num)
-account_num_IQR <- IQR(account_num)
-account_num_quantiles <- quantile(account_num, probs = c(0.25, 0.5, 0.75))
-account_num_Q1 <- quantile(account_num, 0.25)
-account_num_Q3 <- quantile(account_num, 0.75)
-account_num_IQR_value <- IQR(account_num)
-account_num_lower_limit <- account_num_Q1 - (1.5 * account_num_IQR_value)
-account_num_upper_limit <- account_num_Q3 + (1.5 * account_num_IQR_value)
 
 # Private_D Analysis
 private_d_counts <- table(private_d)
 private_d_props <- prop.table(private_d_counts)
 private_d_counts_mode <- names(private_d_counts)[which.max(private_d_counts)]
 
-account_num_mean <- mean(account_num)
-account_num_median <- median(account_num)
-account_num_sd <- sd(account_num)
-account_num_var <- var(account_num)
-account_num_IQR <- IQR(account_num)
-account_num_quantiles <- quantile(account_num, probs = c(0.25, 0.5, 0.75))
-account_num_Q1 <- quantile(account_num, 0.25)
-account_num_Q3 <- quantile(account_num, 0.75)
-account_num_IQR_value <- IQR(account_num)
-account_num_lower_limit <- account_num_Q1 - (1.5 * account_num_IQR_value)
-account_num_upper_limit <- account_num_Q3 + (1.5 * account_num_IQR_value)
 
 # Visuals
 
@@ -574,28 +506,22 @@ cat(paste("Mean:", round(ci_followers$estimate, 2)))
 # Compare Men (sex == 'M') vs Women (sex == 'F')
 followers_men <- subset(data_no_outliers, sex == 'M')$num_follower
 followers_women <- subset(data_no_outliers, sex == 'F')$num_follower
-
 ci_followers_men <- t.test(followers_men, conf.level = 0.99)
 ci_followers_women <- t.test(followers_women, conf.level = 0.99)
-
 cat("\n Followers: Men 99% CI \n")
 cat(ci_followers_men$conf.int)
 cat(paste("Mean:", round(ci_followers_men$estimate, 2)))
-
 cat("\n Followers: Women 99% CI \n")
 cat(ci_followers_women$conf.int)
 cat(paste("Mean:", round(ci_followers_women$estimate, 2)))
 
-cat("B3. Proportion of Italian Accounts (90% Confidence Interval)")
-# B3. Proportion of Italian Accounts (90% Confidence Interval)
 
-# Count occurrences
+
+# B3. Proportion of Italian Accounts (90% Confidence Interval)
+cat("B3. Proportion of Italian Accounts (90% Confidence Interval)")
 n_total <- nrow(data_no_outliers)
 n_italian <- sum(data_no_outliers$language == "Italian")
-
-# Calculate CI for proportion
 ci_italian <- prop.test(n_italian, n_total, conf.level = 0.90)
-
 cat("\n Language: Italian Proportion 90% CI \n")
 cat(ci_italian$conf.int)
 cat(paste("Proportion:", round(ci_italian$estimate, 4)))
@@ -605,174 +531,56 @@ cat(paste("Proportion:", round(ci_italian$estimate, 4)))
 # C1. Followers: Men vs Women
 # H0: Mean followers (Men) = Mean followers (Women)
 # H1: Mean followers (Men) != Mean followers (Women)
-
 followers_men <- subset(data_no_outliers, sex == 'M')$num_follower
 followers_women <- subset(data_no_outliers, sex == 'F')$num_follower
-
 test_c1 <- t.test(followers_men, followers_women)
-
 cat("\nC1 Followers: Men vs Women\n")
 print(test_c1)
 
 # C2 Story Views: Public vs Private University ---
 # H0: Mean views (Public) = Mean views (Private)
 # H1: Mean views (Public) != Mean views (Private)
-
 views_public <- subset(data_no_outliers, private_d == 0)$story_views
 views_private <- subset(data_no_outliers, private_d == 1)$story_views
-
 test_c2 <- t.test(views_public, views_private)
-
 cat("\nC2 Story Views: Public vs Private University\n")
 print(test_c2)
 
 # C3 Daily Time: English vs Italian
 # H0: Mean time (English) = Mean time (Italian)
 # H1: Mean time (English) != Mean time (Italian)
-
 time_english <- subset(data_no_outliers, language == 'English')$day_time_min
 time_italian <- subset(data_no_outliers, language == 'Italian')$day_time_min
-
 test_c3 <- t.test(time_english, time_italian, conf.level = 0.99)
-
 cat("\nC3 Daily Time: English vs Italian\n")
 print(test_c3)
 
+
+
+
+
 # D. Linear Regression Analysis
 
-reg_data <- data_no_outliers 
-
 # D1. Simple Linear Regression
-# Model: story_views (Dependent) ~ num_follower (Independent)
-
-
-cat("\n\n")
-cat(" D1. Simple Linear Regression Results \n")
-cat("\n\n")
-
-# 1. Run the model
-model_simple <- lm(story_views ~ num_follower, data = reg_data)
+cat("\n D1. Simple Linear Regression Results \n")
+model_simple <- lm(story_views ~ num_follower, data = data_no_outliers)
 summary_simple <- summary(model_simple)
-
-# 2. Calculate Metrics (SSE, SSR, SST, MSE, RSE, R-squared)
-
-# Predictions and Residuals
-preds_simple <- predict(model_simple)
-resids_simple <- residuals(model_simple)
-
-# Sum of Squares
-sse_simple <- sum(resids_simple^2)                         
-sst_simple <- sum((reg_data$story_views - mean(reg_data$story_views))^2) 
-ssr_simple <- sst_simple - sse_simple                    
-
-# Mean Squares and Errors
-n_simple <- nrow(reg_data)
-p_simple <- 1 # Number of predictors: num_follower
-mse_simple <- sse_simple / (n_simple - p_simple - 1)       
-rse_simple <- sqrt(mse_simple)                           
-r_squared_simple <- summary_simple$r.squared               
-
-# Print Metrics
-cat(sprintf("SSE: %.4f\n", sse_simple))
-cat(sprintf("SSR: %.4f\n", ssr_simple))
-cat(sprintf("SST: %.4f\n", sst_simple))
-cat(sprintf("MSE: %.4f\n", mse_simple))
-cat(sprintf("RSE: %.4f\n", rse_simple))
-cat(sprintf("R-squared: %.4f\n", r_squared_simple))
-
-# 3. Coefficients (b0, b1, Std Error, t-value, p-value)
-cat("\n--- Coefficients ---\n")
-print(summary_simple$coefficients)
-
-# 4. Standardized Coefficients
-
-\
-model_simple_std <- lm(scale(story_views) ~ scale(num_follower), data = reg_data)
-cat("\n--- Standardized Coefficients (Beta) ---\n")
-print(coef(model_simple_std))
-
-# 5. Plots
-
-# Histogram of Residuals
-plot_hist_resid_simple <- ggplot(data.frame(resids = resids_simple), aes(x = resids)) +
-  geom_histogram(fill = "steelblue", color = "white", bins = 30) +
-  theme_minimal() +
-  labs(title = "Histogram of Residuals (Simple Regression)", x = "Residuals", y = "Frequency")
-
-ggsave("results/D1_histogram_residuals.png", plot = plot_hist_resid_simple, width = 6, height = 4)
-
-# Residuals vs Fitted Plot
-plot_resid_fit_simple <- ggplot(data.frame(fitted = preds_simple, resid = resids_simple), aes(x = fitted, y = resid)) +
-  geom_point(alpha = 0.5, color = "darkblue") +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
-  theme_minimal() +
-  labs(title = "Residuals vs Fitted (Simple Regression)", x = "Fitted Values", y = "Residuals")
-
-ggsave("results/D1_residuals_vs_fitted.png", plot = plot_resid_fit_simple, width = 6, height = 4)
-
+anova_simple <- anova(model_simple)
+print (summary_simple)
+print (anova_simple)
+png("results/model_simple_plot.png")  
+plot(model_simple)  
+dev.off()           
 
 # D2. Multiple Linear Regression
-# Model: story_views ~ num_follower + sex + account_num + num_post + day_time_min
-
-cat("\n\n")
-cat(" D2. Multiple Linear Regression Results \n")
-cat("\n")
-
-# 1. Run the model
-model_multi <- lm(story_views ~ num_follower + sex + account_num + num_post + day_time_min, data = reg_data)
+cat("\n D2. Multiple Linear Regression Results \n")
+model_multi <- lm(story_views ~ num_follower + sex + account_num + num_post + day_time_min, data = data_no_outliers)
 summary_multi <- summary(model_multi)
+anova_multi <- anova(model_multi)
+print (summary_multi)
+print (anova_multi)
+png("results/model_multi_plot.png")  
+plot(model_multi)  
+dev.off()           
 
-# 2. Calculate Metrics
-preds_multi <- predict(model_multi)
-resids_multi <- residuals(model_multi)
 
-sse_multi <- sum(resids_multi^2)
-sst_multi <- sum((reg_data$story_views - mean(reg_data$story_views))^2)
-ssr_multi <- sst_multi - sse_multi
-
-n_multi <- nrow(reg_data)
-p_multi <- 5 # Number of predictors: num_follower, sex, account_num, num_post, day_time_min
-mse_multi <- sse_multi / (n_multi - p_multi - 1)
-rse_multi <- sqrt(mse_multi)
-r_squared_multi <- summary_multi$r.squared
-
-# Print Metrics
-cat(sprintf("SSE: %.4f\n", sse_multi))
-cat(sprintf("SSR: %.4f\n", ssr_multi))
-cat(sprintf("SST: %.4f\n", sst_multi))
-cat(sprintf("MSE: %.4f\n", mse_multi))
-cat(sprintf("RSE: %.4f\n", rse_multi))
-cat(sprintf("R-squared: %.4f\n", r_squared_multi))
-
-# 3. Coefficients
-cat("\nCoefficients\n")
-print(summary_multi$coefficients)
-
-# 4. Standardized Coefficients
-
-reg_data_scaled <- reg_data
-num_vars <- c("story_views", "num_follower", "account_num", "num_post", "day_time_min")
-reg_data_scaled[num_vars] <- scale(reg_data[num_vars])
-
-model_multi_std <- lm(story_views ~ num_follower + sex + account_num + num_post + day_time_min, data = reg_data_scaled)
-cat("\n Coefficients\n")
-print(coef(model_multi_std))
-
-# 5. Plots
-
-# Histogram of Residuals
-plot_hist_resid_multi <- ggplot(data.frame(resids = resids_multi), aes(x = resids)) +
-  geom_histogram(fill = "forestgreen", color = "white", bins = 30) +
-  theme_minimal() +
-  labs(title = "Histogram of Residuals (Multiple Regression)", x = "Residuals", y = "Frequency")
-
-ggsave("results/D2_histogram_residuals.png", plot = plot_hist_resid_multi, width = 6, height = 4)
-
-# Residuals vs Fitted Plot
-plot_resid_fit_multi <- ggplot(data.frame(fitted = preds_multi, resid = resids_multi), aes(x = fitted, y = resid)) +
-  geom_point(alpha = 0.5, color = "darkgreen") +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
-  theme_minimal() +
-  labs(title = "Residuals vs Fitted (Multiple Regression)", x = "Fitted Values", y = "Residuals")
-
-ggsave("results/D2_residuals_vs_fitted.png", plot = plot_resid_fit_multi, width = 6, height = 4)
