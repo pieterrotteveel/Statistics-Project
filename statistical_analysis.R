@@ -217,8 +217,6 @@ plot_siblings_props <- ggplot(as.data.frame(siblings_props), aes(x = siblings, y
 
 ggsave("results/plot_siblings_props.png", plot = plot_siblings_props, width = 6, height = 4)
 
-
-
 # Effectiveness Analysis Visluals
 
 plot_effectiveness <- ggplot(as.data.frame(effectiveness_counts), aes(x = effectiveness, y = Freq)) +
@@ -474,7 +472,7 @@ removed_percentage <- (removed_count / original_count) * 100
 print(removed_percentage)
 
 write.csv(data_no_outliers, "data/cleaned_data_final_no_outliers.csv", row.names = FALSE)
-print(summary(data_no_outliers))
+
 
 #B. Confidence Intervals
 cat("\n \n")
@@ -579,6 +577,7 @@ png("results/model_simple_plot.png")
 plot(model_simple)  
 dev.off()   
 
+
 # Visualizing the Linear Regression (Story Views vs Followers)
 
 plot_linear_reg <- ggplot(data_no_outliers, aes(x = num_follower, y = story_views)) +
@@ -592,6 +591,28 @@ plot_linear_reg <- ggplot(data_no_outliers, aes(x = num_follower, y = story_view
   theme_minimal()
 
 ggsave("results/plot_linear_regression_1.png", plot = plot_linear_reg, width = 8, height = 6)
+
+# 3. Visual Check: Normality (The QQ Plot)
+# Ideally, points should fall on the diagonal line
+plot_qq <- autoplot(model_simple, which = 2, ncol = 1, label.size = 3) +
+  theme_minimal() +
+  ggtitle("Normal Q-Q Plot (Normality Check)")
+
+ggsave("results/d1_qq_plot.png", plot = plot_qq, width = 6, height = 4)
+
+# 4. Statistical Tests for Assumptions
+
+# Normality Test (Shapiro-Wilk)
+# H0: Residuals are normally distributed. (p > 0.05 is good)
+shapiro_test <- shapiro.test(residuals(model_simple))
+cat("\n--- Normality Assumption (Shapiro-Wilk Test) ---\n")
+print(shapiro_test)
+
+# Homoscedasticity Test (Breusch-Pagan)
+# H0: Variance is constant (Homoscedasticity). (p > 0.05 is good)
+bp_test <- bptest(model_simple)
+cat("\n--- Homoscedasticity Assumption (Breusch-Pagan Test) ---\n")
+print(bp_test)
 
 
 # D2. Multiple Linear Regression
